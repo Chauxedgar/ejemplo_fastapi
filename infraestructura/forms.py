@@ -17,13 +17,13 @@ class IncidenciaServidorForm(forms.ModelForm):
     widgets = {
         'titulo': forms.TextInput(
             attrs={
-                'class': 'form-control',
+                'class': 'form-control' '.form-control-sm',
                 'placeholder': 'Ej. Caída de servicio HTTP',
             }
         ),
         'descripcion': forms.Textarea(
             attrs={
-                'class': 'form-control',
+                'class': 'form-control' '.form-control-sm',
                 'rows': 3,
                 'placeholder': 'Detalles de la falla...',
             }
