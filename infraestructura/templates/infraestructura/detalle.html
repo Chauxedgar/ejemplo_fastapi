@@ -1,15 +1,20 @@
 {% extends 'infraestructura/base.html' %}
 {% block title %}Detalle - {{ nodo.nombre_host }}{% endblock %}
-{% block content %}
 
+{% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-primary text-white py-3">
+    <div class="col-md-9">
+
+        <!-- Ficha Técnica del Servidor -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
                 <h4 class="mb-0">Ficha Técnica del Servidor: {{ nodo.nombre_host }}</h4>
+                <button type="button" class="btn btn-danger btn-sm shadow-sm" data-bs-toggle="collapse" data-bs-target="#formIncidenciaCollapse">
+                    + Reportar Incidencia
+                </button>
             </div>
             <div class="card-body p-4">
-                <ul class="list-group list-group-flush mb-4">
+                <ul class="list-group list-group-flush mb-3">
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <span class="fw-bold">Dirección IP:</span>
                         <span class="font-monospace text-secondary">{{ nodo.direccion_ip }}</span>
@@ -44,12 +49,116 @@
                     </li>
                 </ul>
 
-                <div class="d-flex justify-content-between">
+                <div class="d-flex justify-content-start">
                     <a href="{% url 'home_servidores' %}" class="btn btn-outline-secondary">← Volver al Listado</a>
                 </div>
             </div>
         </div>
+
+        <!-- Formulario Desplegable: Registrar Nueva Incidencia -->
+        <div class="collapse mb-4" id="formIncidenciaCollapse">
+            <div class="card border-danger shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Registrar Alerta / Incidencia</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{% url 'registrar_incidencia' nodo.pk %}" method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label fw-bold">Título del fallo:</label>
+                                {{ form_incidencia.titulo }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-bold">Nivel de Severidad:</label>
+                                {{ form_incidencia.severidad }}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Descripción detallada:</label>
+                            {{ form_incidencia.descripcion }}
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="#formIncidenciaCollapse">Cancelar</button>
+                            <button type="submit" class="btn btn-danger btn-sm">Guardar Incidencia</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Alertas e Incidencias -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white py-3">
+                <h5 class="mb-0">Historial de Alertas e Incidencias Operativas</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if incidencias %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Severidad</th>
+                                <th>Título</th>
+                                <th>Descripción</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th class="text-center">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for inc in incidencias %}
+                            <tr class="{% if inc.resuelta %}table-light text-muted{% endif %}">
+                                <td>
+                                    {% if inc.severidad == 'CRITICA' %}
+                                        <span class="badge bg-danger">Crítica</span>
+                                    {% elif inc.severidad == 'ALTA' %}
+                                        <span class="badge bg-warning text-dark">Alta</span>
+                                    {% elif inc.severidad == 'MEDIA' %}
+                                        <span class="badge bg-info text-dark">Media</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Baja</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <strong>{{ inc.titulo }}</strong>
+                                </td>
+                                <td>{{ inc.descripcion }}</td>
+                                <td>
+                                    <small>{{ inc.fecha_reporte|date:"d/m/Y H:i" }}</small>
+                                </td>
+                                <td>
+                                    {% if inc.resuelta %}
+                                        <span class="badge bg-success">Resuelta</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Activa</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if not inc.resuelta %}
+                                    <form action="{% url 'marcar_resuelta' inc.id %}" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-success btn-sm py-0 px-2" title="Marcar como resuelta">
+                                            ✓ Resolver
+                                        </button>
+                                    </form>
+                                    {% else %}
+                                    <span class="text-muted small">Cerrada</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-4 text-center text-muted">
+                    <p class="mb-0">No existen alertas ni incidencias reportadas para este nodo actualmente.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
     </div>
 </div>
-
 {% endblock %}

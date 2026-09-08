@@ -8,6 +8,45 @@ def validate_ip(value):
     if value.startswith("10.10.10."):
         raise ValidationError("Las direcciones IP en el segmento 10.10.10.x están reservadas para pruebas internas de aislamiento")
 
+from django.db import models
+
+
+class IncidenciaServidor(models.Model):
+  SEVERIDAD_CHOICES = [
+      ('BAJA', 'Baja'),
+      ('MEDIA', 'Media'),
+      ('ALTA', 'Alta'),
+      ('CRITICA', 'Crítica'),
+  ]
+
+  servidor = models.ForeignKey(
+      'NodoServidor',
+      on_delete=models.CASCADE,
+      related_name='incidencias',
+      verbose_name='Servidor',
+  )
+  titulo = models.CharField(max_length=150, verbose_name='Título')
+  descripcion = models.TextField(verbose_name='Descripción')
+  severidad = models.CharField(
+      max_length=10,
+      choices=SEVERIDAD_CHOICES,
+      default='MEDIA',
+      verbose_name='Severidad',
+  )
+  resuelta = models.BooleanField(
+      default=False, verbose_name='Estado de resolución'
+  )
+  fecha_reporte = models.DateTimeField(
+      auto_now_add=True, verbose_name='Fecha de reporte'
+  )
+
+  def __str__(self):
+    return f'[{self.severidad}] {self.titulo} - {self.servidor}'
+
+  class Meta:
+    ordering = ['-fecha_reporte']
+    verbose_name = 'Incidencia de Servidor'
+    verbose_name_plural = 'Incidencias de Servidores'
 
 # Create your models here.
 class NodoServidor(models.Model):
