@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'infraestructura'
+    'drf_spectacular'
 ]
 
 MIDDLEWARE = [
@@ -53,9 +54,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'centro_comando.urls'
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 
-        'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.PageNumberPagination.PageNumberPagination', 
         "PAGE_SIZE": 10,
+        'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+        
         }
     
 
@@ -133,4 +135,11 @@ MAILERS = {
     'default': {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Centro de Comando API - UdenarNova SAS API',
+    'DESCRIPTION': 'Documentación de la API REST para el proyecto Centro de Comando.',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }
