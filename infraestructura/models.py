@@ -7,10 +7,7 @@ def validate_ip(value):
 
     if value.startswith("10.10.10."):
         raise ValidationError("Las direcciones IP en el segmento 10.10.10.x están reservadas para pruebas internas de aislamiento")
-
 from django.db import models
-
-
 class IncidenciaServidor(models.Model):
   SEVERIDAD_CHOICES = [
       ('BAJA', 'Baja'),
@@ -40,10 +37,10 @@ class IncidenciaServidor(models.Model):
       auto_now_add=True, verbose_name='Fecha de reporte'
   )
 
-  def __str__(self):
+def __str__(self):
     return f'[{self.severidad}] {self.titulo} - {self.servidor}'
 
-  class Meta:
+class Meta: 
     ordering = ['-fecha_reporte']
     verbose_name = 'Incidencia de Servidor'
     verbose_name_plural = 'Incidencias de Servidores'
@@ -75,9 +72,9 @@ class NodoServidor(models.Model):
         return f"{self.nombre_host} [{self.direccion_ip}]"
             
 
-    class Meta:
-        verbose_name = "Nodo de Servidor"
-        verbose_name_plural = "Flota de Servidores"
+class Meta:
+    verbose_name = "Nodo de Servidor"
+    verbose_name_plural = "Flota de Servidores"
 
 
 class RegistroAuditoria(models.Model):
@@ -88,6 +85,31 @@ class RegistroAuditoria(models.Model):
     def __str__(self):
         return f"{self.detalles} on {self.servidor.nombre_host} @ {self.fecha_evento}"
 
-    class Meta:
-        verbose_name = "Registro de Auditoría"
-        verbose_name_plural = "Registros de Auditoría"
+class Meta:
+    verbose_name = "Registro de Auditoría"
+    verbose_name_plural = "Registros de Auditoría"
+
+class MantenimientoNodo(models.Model):
+    TIPO_TAREA = [
+        ('actualizacion', 'Actualización de sistema'),
+        ('backup', 'Respaldo de Base de Datos'),
+        ('seguridad','Parche de Seguridad'),
+        ('hardware','Recisión de Hardware'),
+    ]
+    servidor = models.ForeignKey( 
+        NodoServidor,  
+        on_delete=models.CASCADE,
+        related_name='mantenimientos',          
+        verbose_name="Servidor Asignado"     
+        )
+    titulo_tarea = models.CharField(max_length=150, verbose_name="Título del Mantenimiento")     
+    descripcion_tecnica = models.TextField(verbose_name="Descripción de la Tarea")     
+    tipo = models.CharField(max_length=30, choices=TIPO_TAREA, default='actualizacion', 
+verbose_name="Tipo de Tarea")     
+    completado = models.BooleanField(default=False, verbose_name="¿Tarea Ejecutada?")     
+    fecha_programada = models.DateTimeField(verbose_name="Fecha y Hora Programada")      
+    def __str__(self):         
+        return f"{self.titulo_tarea} - {self.servidor.nombre_host}"      
+    class Meta:         
+        verbose_name = "Mantenimiento de Servidor"         
+        verbose_name_plural = "Programación de Mantenimientos" 

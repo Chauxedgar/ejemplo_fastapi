@@ -38,8 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'infraestructura'
-    'drf_spectacular'
+    'infraestructura',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -54,11 +54,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'centro_comando.urls'
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.PageNumberPagination.PageNumberPagination', 
-        "PAGE_SIZE": 10,
-        'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-        
-        }
+    'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.PageNumberPagination', 
+    "PAGE_SIZE": 10,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    }
     
 
 

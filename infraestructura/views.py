@@ -1,9 +1,17 @@
 from django.contrib.auth.models import Group, User
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    ListView,
+    UpdateView,
+)
 from rest_framework import permissions, viewsets
 
-from .forms import IncidenciaServidorForm, NodoServidorForm
-from .models import IncidenciaServidor, NodoServidor
+from .forms import IncidenciaServidorForm, MantenimientoForm, NodoServidorForm
+from .models import IncidenciaServidor, MantenimientoNodo, NodoServidor
 from .serializers import (
     GroupSerializer,
     IncidenciaServidorSerializer,
@@ -12,7 +20,44 @@ from .serializers import (
 )
 
 # ==========================================
-# 1. Vistas Web Tradicionales (HTML / Plantillas)
+# 1. Vistas Basadas en Clases (Mantenimientos)
+# ==========================================
+
+
+class MantenimientoListView(ListView):
+  model = MantenimientoNodo
+  template_name = 'infraestructura/mantenimiento_list.html'
+  context_object_name = 'mantenimientos'
+
+
+class MantenimientoDetailView(DetailView):
+  model = MantenimientoNodo
+  template_name = 'infraestructura/mantenimiento_detail.html'
+  context_object_name = 'mantenimiento'
+
+
+class MantenimientoCreateView(CreateView):
+  model = MantenimientoNodo
+  form_class = MantenimientoForm
+  template_name = 'infraestructura/mantenimiento_form.html'
+  success_url = reverse_lazy('lista_mantenimientos')
+
+
+class MantenimientoUpdateView(UpdateView):
+  model = MantenimientoNodo
+  form_class = MantenimientoForm
+  template_name = 'infraestructura/mantenimiento_form.html'
+  success_url = reverse_lazy('lista_mantenimientos')
+
+
+class MantenimientoDeleteView(DeleteView):
+  model = MantenimientoNodo
+  template_name = 'infraestructura/mantenimiento_confirm_delete.html'
+  success_url = reverse_lazy('lista_mantenimientos')
+
+
+# ==========================================
+# 2. Vistas Basadas en Funciones (Servidores e Incidencias)
 # ==========================================
 
 
@@ -94,7 +139,7 @@ def marcar_resuelta(request, incidencia_id):
 
 
 # ==========================================
-# 2. ViewSets para la API REST (JSON)
+# 3. ViewSets para la API REST (JSON)
 # ==========================================
 
 

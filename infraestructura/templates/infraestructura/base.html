@@ -1,5 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">     
+    <div class="container-fluid px-4">         
+        <a class="navbar-brand fw-bold" href="{% url 'home_servidores' %}">UdenarNova | Comando</a>         
+        <div class="navbar-nav ms-auto">             
+            <a class="nav-link" href="{% url 'home_servidores' %}">Servidores</a>             
+            <a class="nav-link" href="{% url 'lista_mantenimientos' %}">Mantenimientos</a>         </div>     </div> </nav> 
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Centro de Comando{% endblock %}</title>
