@@ -1,0 +1,7 @@
+import 'zone.js'; // <-- Agrega esta línea al inicio absoluto del archivo
+import { bootstrapApplication } from '@angular/platform-browser';
+import { appConfig } from './app/app.config';
+import { AppComponent } from './app/app';
+
+bootstrapApplication(AppComponent, appConfig)
+  .catch((err) => console.error(err));

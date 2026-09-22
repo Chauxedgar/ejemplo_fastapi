@@ -1,0 +1,107 @@
+<div class="container mt-4" *ngIf="servidor">
+  <div class="row justify-content-center">
+    <div class="col-md-9">
+
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-primary text-white py-3">
+          <h4 class="mb-0">Ficha Técnica: {{ servidor.nombre_host }}</h4>
+        </div>
+        <div class="card-body p-4">
+          <ul class="list-group list-group-flush mb-3">
+            <li class="list-group-item d-flex justify-content-between">
+              <strong>Dirección IP:</strong> <span class="font-monospace text-secondary">{{ servidor.direccion_ip }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <strong>Motor:</strong> <span>{{ servidor.motor_contenedores_display || servidor.motor_contenedores }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <strong>Estado Operativo:</strong>
+              <span class="badge" [ngClass]="servidor.en_produccion ? 'bg-success' : 'bg-warning text-dark'">
+                {{ servidor.en_produccion ? 'Producción' : 'Mantenimiento' }}
+              </span>
+            </li>
+          </ul>
+          <a routerLink="/" class="btn btn-outline-secondary btn-sm">← Volver al Listado</a>
+        </div>
+      </div>
+
+      <!-- Formulario Nueva Alerta -->
+      <div class="card border-danger shadow-sm mb-4">
+        <div class="card-header bg-danger text-white py-2">
+          <h5 class="mb-0">Registrar Alerta / Incidencia</h5>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="guardarIncidencia()">
+            <div class="row mb-3">
+              <div class="col-md-8">
+                <label class="form-label fw-bold">Título</label>
+                <input type="text" class="form-control" [(ngModel)]="nuevaIncidencia.titulo" name="titulo" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-bold">Severidad</label>
+                <select class="form-select" [(ngModel)]="nuevaIncidencia.severidad" name="severidad">
+                  <option value="BAJA">Baja</option>
+                  <option value="MEDIA">Media</option>
+                  <option value="ALTA">Alta</option>
+                  <option value="CRITICA">Crítica</option>
+                </select>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Descripción</label>
+              <textarea class="form-control" rows="3" [(ngModel)]="nuevaIncidencia.descripcion" name="descripcion" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-danger btn-sm">Guardar Incidencia</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Tabla de Incidencias -->
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-dark text-white py-2">
+          <h5 class="mb-0">Historial de Incidencias</h5>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0" *ngIf="servidor.incidencias && servidor.incidencias.length > 0; else noIncidencias">
+            <thead class="table-light">
+              <tr>
+                <th>Severidad</th>
+                <th>Título</th>
+                <th>Estado</th>
+                <th class="text-center">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let inc of servidor.incidencias">
+                <td>
+                  <span class="badge" [ngClass]="{
+                    'bg-danger': inc.severidad === 'CRITICA',
+                    'bg-warning text-dark': inc.severidad === 'ALTA',
+                    'bg-info text-dark': inc.severidad === 'MEDIA',
+                    'bg-secondary': inc.severidad === 'BAJA'
+                  }">{{ inc.severidad }}</span>
+                </td>
+                <td><strong>{{ inc.titulo }}</strong> - <small class="text-muted">{{ inc.descripcion }}</small></td>
+                <td>
+                  <span class="badge" [ngClass]="inc.resuelta ? 'bg-success' : 'bg-danger'">
+                    {{ inc.resuelta ? 'Resuelta' : 'Activa' }}
+                  </span>
+                </td>
+                <td class="text-center">
+                  <button *ngIf="!inc.resuelta" class="btn btn-outline-success btn-sm py-0" (click)="resolver(inc.id!)">
+                    ✓ Resolver
+                  </button>
+                  <span *ngIf="inc.resuelta" class="text-muted small">Cerrada</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <ng-template #noIncidencias>
+            <div class="p-3 text-center text-muted">No existen incidencias reportadas para este nodo.</div>
+          </ng-template>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
