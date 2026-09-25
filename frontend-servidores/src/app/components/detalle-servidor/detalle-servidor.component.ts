@@ -40,6 +40,30 @@ export class DetalleServidorComponent implements OnInit {
     });
   }
 
+  editarServidor(): void {
+    if (!this.servidor) return;
+    
+    const nuevoNombre = prompt('Nuevo nombre de host:', this.servidor.nombre_host);
+    const nuevaIp = prompt('Nueva dirección IP:', this.servidor.direccion_ip);
+
+    if (nuevoNombre && nuevaIp) {
+      const datosActualizados: Partial<NodoServidor> = {
+        nombre_host: nuevoNombre,
+        direccion_ip: nuevaIp,
+        motor_contenedores: this.servidor.motor_contenedores,
+        proxy_inverso: this.servidor.proxy_inverso,
+        en_produccion: this.servidor.en_produccion,
+        fecha_despliegue: this.servidor.fecha_despliegue
+      };
+
+      this.servidorService.actualizarServidor(this.servidor.id, datosActualizados).subscribe({
+        next: (res) => {
+          this.servidor = res; // Refresca la vista local
+        },
+        error: (err) => console.error('Error al actualizar:', err)
+      });
+    }
+  }
   guardarIncidencia(): void {
     if (!this.servidor || !this.nuevaIncidencia.titulo || !this.nuevaIncidencia.descripcion) return;
 

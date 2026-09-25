@@ -1,6 +1,16 @@
 <div class="container mt-4" *ngIf="servidor">
   <div class="row justify-content-center">
     <div class="col-md-9">
+      <div class="card shadow-sm border-0 mb-4">
+  <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
+    <h4 class="mb-0">Ficha Técnica: {{ servidor.nombre_host }}</h4>
+    <button class="btn btn-light btn-sm text-primary fw-bold" (click)="editarServidor()">
+      ✎ Editar Servidor
+    </button>
+  </div>
+  <!-- Resto del contenido de la ficha... -->
+</div>
+
 
       <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-primary text-white py-3">
